@@ -1,0 +1,29 @@
+services:
+
+  cn1:
+    build:
+      dockerfile: ./cn1/Dockerfile
+    stdin_open: true 
+    tty: true
+    volumes:
+      - ./a.txt:/a.txt
+      #- ./cn1/custom_health_check.sh:/usr/local/bin/custom_health_check.sh
+    healthcheck:
+     #test: cat /a.txt | grep ss
+      test: ["CMD-SHELL", "/usr/local/bin/custom_health_check.sh"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 40s
+
+
+  cn2:
+    build:
+      dockerfile: ./cn2/Dockerfile
+    stdin_open: true 
+    tty: true
+    depends_on:
+      cn1:
+        condition: service_healthy
+
+

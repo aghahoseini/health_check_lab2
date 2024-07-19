@@ -1,0 +1,35 @@
+services:
+
+  cn1:
+    build:
+      dockerfile: ./cn1/Dockerfile
+    stdin_open: true 
+    tty: true
+    volumes:
+      - ./a.txt:/a.txt
+    healthcheck:
+      test: cat /a.txt | grep ss
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+
+  cn2:
+    build:
+      dockerfile: ./cn2/Dockerfile
+    stdin_open: true 
+    tty: true
+    depends_on:
+      cn1:
+        condition: service_healthy
+
+  cn3:
+    build:
+      dockerfile: ./cn3/Dockerfile
+    stdin_open: true 
+    tty: true
+    depends_on:
+      - cn2
+
+
